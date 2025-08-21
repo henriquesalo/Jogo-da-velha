@@ -1,5 +1,8 @@
 const campos = document.querySelectorAll('.opcoes');
 const quadro = document.querySelector('.quadro');
+const textMensagemDeVitoria = document.querySelector('.mensagem-de-vitoria');
+const mensagem = document.querySelector('.mensagem');
+const botaoJogarNovamente = document.querySelector('.botaoJogarNovamente');
 
 let isCircle;
 
@@ -15,13 +18,29 @@ const combinacoes = [
 ];
 
 const startGame = () => {
+    isCircle = false;
+
     for (const campo of campos) {
+        campo.classList.remove("circle");
+        campo.classList.remove("x");
+        campo.removeEventListener("click", handleClick);
         campo.addEventListener("click", handleClick, { once: true });
     }
-
-    isCircle = false;
     
-    quadro.classList.add("x");
+    trocandoClasseDoHover();
+    mensagem.classList.remove('mostrar-mensagem');
+};
+
+const endGame = (empate) => {
+    if(empate) {
+        textMensagemDeVitoria.innerText = "Empate!"
+    } else {
+        textMensagemDeVitoria.innerText = isCircle 
+        ? 'Bolinha Venceu!'
+        : 'X Venceu!';
+    }
+
+    mensagem.classList.add("mostrar-mensagem")
 };
 
 const verificarVitoria = (jogadorAtual) => {
@@ -36,9 +55,7 @@ const marcador = (opcao, classToAdd) => {
     opcao.classList.add(classToAdd);
 };
 
-const trocarSimbolo = () => {
-    isCircle = !isCircle;
-
+const trocandoClasseDoHover = () => {
     quadro.classList.remove('circle');
     quadro.classList.remove('x');
 
@@ -47,7 +64,12 @@ const trocarSimbolo = () => {
     } else {
         quadro.classList.add("x");
     }
+};
 
+const trocarSimbolo = () => {
+    isCircle = !isCircle;
+
+    trocandoClasseDoHover();
 };
 
 const handleClick = (e) => {
@@ -57,10 +79,12 @@ const handleClick = (e) => {
 
     const vitoria = verificarVitoria(classToAdd);
     if(vitoria) {
-        console.log("vencedor!")
+        //console.log("vencedor!")
+        endGame(false);
     }
 
     trocarSimbolo();
 };
 
 startGame();
+botaoJogarNovamente.addEventListener('click', startGame);

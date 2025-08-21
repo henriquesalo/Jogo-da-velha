@@ -139,3 +139,7 @@ body {
     color: white;
     font-size: 5rem;
 }
+
+.mostrar-mensagem {
+    display: flex;
+}
