@@ -51,6 +51,12 @@ const verificarVitoria = (jogadorAtual) => {
     });
 };
 
+const verificarEmpate = () => {
+    return [...campos].every(campo => {
+        return campo.classList.contains('x') || campo.classList.contains('circle');
+    });
+};
+
 const marcador = (opcao, classToAdd) => {
     opcao.classList.add(classToAdd);
 };
@@ -78,12 +84,15 @@ const handleClick = (e) => {
     marcador(opcao, classToAdd);
 
     const vitoria = verificarVitoria(classToAdd);
+    const empate = verificarEmpate();
+    
     if(vitoria) {
-        //console.log("vencedor!")
         endGame(false);
+    } else if(empate) {
+        endGame(true);
+    } else {
+        trocarSimbolo();
     }
-
-    trocarSimbolo();
 };
 
 startGame();
