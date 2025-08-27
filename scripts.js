@@ -1,99 +1,107 @@
-const campos = document.querySelectorAll('.opcoes');
-const quadro = document.querySelector('.quadro');
-const textMensagemDeVitoria = document.querySelector('.mensagem-de-vitoria');
-const mensagem = document.querySelector('.mensagem');
-const botaoJogarNovamente = document.querySelector('.botaoJogarNovamente');
+class JogoDaVelha {
+    constructor() {
+        this.campos = document.querySelectorAll('.opcoes');
+        this.quadro = document.querySelector('.quadro');
+        this.textMensagemDeVitoria = document.querySelector('.mensagem-de-vitoria');
+        this.mensagem = document.querySelector('.mensagem');
+        this.botaoJogarNovamente = document.querySelector('.botaoJogarNovamente');
 
-let isCircle;
+        this.isCircle = false;
 
-const combinacoes = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-];
+        this.combinacoes = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8], 
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
 
-const startGame = () => {
-    isCircle = false;
-
-    for (const campo of campos) {
-        campo.classList.remove("circle");
-        campo.classList.remove("x");
-        campo.removeEventListener("click", handleClick);
-        campo.addEventListener("click", handleClick, { once: true });
-    }
-    
-    trocandoClasseDoHover();
-    mensagem.classList.remove('mostrar-mensagem');
-};
-
-const endGame = (empate) => {
-    if(empate) {
-        textMensagemDeVitoria.innerText = "Empate!"
-    } else {
-        textMensagemDeVitoria.innerText = isCircle 
-        ? 'Bolinha Venceu!'
-        : 'X Venceu!';
+        this.startGame();
+        this.botaoJogarNovamente.addEventListener('click', () => this.startGame());
     }
 
-    mensagem.classList.add("mostrar-mensagem")
-};
+    startGame() {
+        this.isCircle = false;
 
-const verificarVitoria = (jogadorAtual) => {
-    return combinacoes.some(combinacao => {
-        return combinacao.every(index =>{
-            return campos[index].classList.contains(jogadorAtual);
-        });
-    });
-};
+        for (const campo of this.campos) {
+            campo.classList.remove("circle");
+            campo.classList.remove("x");
+            campo.replaceWith(campo.cloneNode(true));
+        }
 
-const verificarEmpate = () => {
-    return [...campos].every(campo => {
-        return campo.classList.contains('x') || campo.classList.contains('circle');
-    });
-};
+        this.campos = document.querySelectorAll('.opcoes');
+        for (const campo of this.campos) {
+            campo.addEventListener('click', (e) => this.handleClick(e), { once: true } );
+        }
 
-const marcador = (opcao, classToAdd) => {
-    opcao.classList.add(classToAdd);
-};
-
-const trocandoClasseDoHover = () => {
-    quadro.classList.remove('circle');
-    quadro.classList.remove('x');
-
-    if (isCircle) {
-        quadro.classList.add("circle");
-    } else {
-        quadro.classList.add("x");
+        this.trocandoClasseDoHover();
+        this.mensagem.classList.remove('mostrar-mensagem');
     }
-};
 
-const trocarSimbolo = () => {
-    isCircle = !isCircle;
-
-    trocandoClasseDoHover();
-};
-
-const handleClick = (e) => {
-    const opcao = e.target;
-    const classToAdd = isCircle ? 'circle' : 'x';
-    marcador(opcao, classToAdd);
-
-    const vitoria = verificarVitoria(classToAdd);
-    const empate = verificarEmpate();
-    
-    if(vitoria) {
-        endGame(false);
-    } else if(empate) {
-        endGame(true);
-    } else {
-        trocarSimbolo();
+    endGame(empate) {
+        if(empate) {
+            this.textMensagemDeVitoria.innerText = "Empate! Deu Velha!"
+        } else {
+            this.textMensagemDeVitoria.innerText = this.isCircle
+                ? 'Bolinha Venceu!'
+                : 'X Venceu!';
+        }
+        this.mensagem.classList.add("mostrar-mensagem");
     }
-};
 
-startGame();
-botaoJogarNovamente.addEventListener('click', startGame);
+    verificarVitoria(jogadorAtual) {
+        return this.combinacoes.some(combinacao =>
+            combinacao.every(index =>
+                this.campos[index].classList.contains(jogadorAtual)
+            )
+        );
+    }
+
+    verificarEmpate() {
+        return [...this.campos].every(campo =>
+            campo.classList.contains('x') || campo.classList.contains('circle')
+        );
+    }
+
+    marcador(opcao, classToAdd) {
+        opcao.classList.add(classToAdd);
+    }
+
+    trocandoClasseDoHover() {
+        this.quadro.classList.remove('circle');
+        this.quadro.classList.remove('x');
+
+        if (this.isCircle) {
+            this.quadro.classList.add("circle");
+        } else {
+            this.quadro.classList.add("x");
+        }
+    }
+
+    trocarSimbolo() {
+        this.isCircle = !this.isCircle;
+        this.trocandoClasseDoHover();
+    }
+
+    handleClick(e) {
+        const opcao = e.target;
+        const classToAdd = this.isCircle ? 'circle' : 'x';
+        this.marcador(opcao, classToAdd);
+
+        const vitoria = this.verificarVitoria(classToAdd);
+        const empate = this.verificarEmpate();
+
+        if (vitoria) {
+            this.endGame(false);
+        } else if (empate) {
+            this.endGame(true);
+        } else {
+            this.trocarSimbolo();
+        }
+    }
+}
+
+const jogo = new JogoDaVelha();
